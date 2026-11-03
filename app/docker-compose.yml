@@ -1,0 +1,24 @@
+services:
+  frontend:
+    image: nginx:stable-alpine
+    ports:
+      - "0.0.0.0:1001:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+
+  backend:
+    build: ./backend
+    ports:
+      - "0.0.0.0:1002:5000"
+    volumes:
+      - ./backend:/app
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:5000/healthy', timeout=2)"
+      interval: 2s
+      timeout: 3s
+      retries: 15
+      start_period: 5s
